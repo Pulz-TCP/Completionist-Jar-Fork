@@ -1,5 +1,9 @@
 {
   "block.completionist_jar.advancement_jar": "Advancement Jar",
+  "item.completionist_jar.marble": "Marble",
+  "item.completionist_jar.marble.hint": "Drop it into your Advancement Jar",
+  "item.completionist_jar.marble_pouch": "Marble Pouch",
+  "container.completionist_jar.pouch": "Marble Pouch",
   "advancement_jar.report.no_owner": "This Advancement Jar has no owner yet.",
   "advancement_jar.report.header": "Advancement Jar (%s): %s / %s (%s%%)",
   "advancement_jar.report.line": "%s: %s / %s",

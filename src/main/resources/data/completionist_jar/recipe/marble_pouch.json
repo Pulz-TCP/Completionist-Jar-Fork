@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [" S ", "L L", "LLL"],
+  "key": { "S": "minecraft:string", "L": "minecraft:leather" },
+  "result": { "id": "completionist_jar:marble_pouch" }
+}

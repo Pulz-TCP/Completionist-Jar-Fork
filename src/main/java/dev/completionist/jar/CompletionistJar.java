@@ -24,6 +24,8 @@ public class CompletionistJar implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModComponents.init();
+		ModAttachments.init();
+		ModItems.init();
 		ModBlocks.init();
 		RefreshJarItemsPayload.register();
 
@@ -56,6 +58,7 @@ public class CompletionistJar implements ModInitializer {
 	}
 
 	private static void refreshPlayer(ServerPlayer player, boolean force) {
+		MarbleAwarder.sync(player);
 		ProgressSnapshot now = ProgressSnapshot.compute(player);
 		ProgressSnapshot before = LAST_SEEN.put(player.getUUID(), now);
 		if (!force && now.equals(before)) {
