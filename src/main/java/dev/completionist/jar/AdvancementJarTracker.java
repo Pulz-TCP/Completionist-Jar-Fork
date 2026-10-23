@@ -65,11 +65,53 @@ final class AdvancementJarTracker {
 		return roots;
 	}
 
+	private static final Map<ServerLevel, Set<BlockPos>> QUEUED_LOADS = new HashMap<>();
+
+	/**
+	 * A jar entity was just loaded. We must not touch the world from inside the chunk-load event: reading or writing
+	 * blocks in the chunk that is still being loaded makes the server wait on itself and the world hangs on load.
+	 * So the work is queued and done on a later tick (see processQueuedLoads).
+	 */
+	static synchronized void queueLoad(ServerLevel level, BlockPos pos) {
+		QUEUED_LOADS.computeIfAbsent(level, ignored -> new HashSet<>()).add(pos.immutable());
+	}
+
+	/** Runs the post-load hook for queued jars whose chunk is now fully loaded; others stay queued. */
+	static synchronized void processQueuedLoads() {
+		if (QUEUED_LOADS.isEmpty()) {
+			return;
+		}
+		List<Runnable> ready = new ArrayList<>();
+		Iterator<Map.Entry<ServerLevel, Set<BlockPos>>> levels = QUEUED_LOADS.entrySet().iterator();
+		while (levels.hasNext()) {
+			Map.Entry<ServerLevel, Set<BlockPos>> entry = levels.next();
+			ServerLevel level = entry.getKey();
+			Iterator<BlockPos> positions = entry.getValue().iterator();
+			while (positions.hasNext()) {
+				BlockPos pos = positions.next();
+				if (!level.isLoaded(pos)) {
+					continue;
+				}
+				positions.remove();
+				ready.add(() -> {
+					if (level.getBlockEntity(pos) instanceof AdvancementJarBlockEntity jar) {
+						jar.onLoadedIntoWorld();
+					}
+				});
+			}
+			if (entry.getValue().isEmpty()) {
+				levels.remove();
+			}
+		}
+		ready.forEach(Runnable::run);
+	}
+
 	static synchronized void clearLevel(ServerLevel level) {
 		JARS.remove(level);
 	}
 
 	static synchronized void clearAll() {
 		JARS.clear();
+		QUEUED_LOADS.clear();
 	}
 }

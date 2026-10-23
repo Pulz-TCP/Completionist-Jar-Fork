@@ -31,7 +31,7 @@ public class CompletionistJar implements ModInitializer {
 
 		ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((be, level) -> {
 			if (be instanceof AdvancementJarBlockEntity jar) {
-				jar.onLoadedIntoWorld();
+				AdvancementJarTracker.queueLoad(level, jar.getBlockPos());
 			}
 		});
 		ServerTickEvents.END_SERVER_TICK.register(CompletionistJar::pollAdvancements);
@@ -49,6 +49,7 @@ public class CompletionistJar implements ModInitializer {
 	 * cheap, and polling also picks up /advancement grant and revoke.
 	 */
 	private static void pollAdvancements(MinecraftServer server) {
+		AdvancementJarTracker.processQueuedLoads();
 		if (server.getTickCount() % POLL_INTERVAL_TICKS != 0) {
 			return;
 		}
