@@ -12,7 +12,6 @@ import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -50,12 +49,15 @@ public record ProgressSnapshot(int completed, int total, List<Tab> tabs) {
 		return total > 0 && completed == total;
 	}
 
-	/** Counts every advancement that has a display (what the advancement screen shows), per root tab. */
+	/**
+	 * What a jar shows: marbles the owner has deposited out of every advancement that has a display (what the
+	 * advancement screen shows), overall and per root tab. Deposits come from the owner's MarbleData ledger, not from
+	 * their advancement progress, so progress only appears once its marble is dropped into a jar.
+	 */
 	public static ProgressSnapshot compute(ServerPlayer owner) {
+		MarbleData ledger = MarbleData.get(owner);
 		ServerAdvancementManager manager = owner.level().getServer().getAdvancements();
-		PlayerAdvancements advancements = owner.getAdvancements();
 		Map<Identifier, int[]> perTab = new LinkedHashMap<>();
-		int completed = 0;
 		int total = 0;
 
 		for (AdvancementNode node : manager.tree().nodes()) {
@@ -63,24 +65,21 @@ public record ProgressSnapshot(int completed, int total, List<Tab> tabs) {
 			if (holder.value().display().isEmpty()) {
 				continue;
 			}
-			boolean done = advancements.getOrStartProgress(holder).isDone();
 			total++;
-			if (done) {
-				completed++;
-			}
 			AdvancementNode root = node.root();
 			if (root.holder().value().display().isPresent()) {
-				int[] counts = perTab.computeIfAbsent(root.holder().id(), id -> new int[2]);
-				counts[1]++;
-				if (done) {
-					counts[0]++;
-				}
+				perTab.computeIfAbsent(root.holder().id(), id -> new int[2])[1]++;
 			}
 		}
 
+		int completed = 0;
 		List<Tab> tabList = new ArrayList<>(perTab.size());
-		perTab.forEach((id, counts) -> tabList.add(new Tab(id, counts[0], counts[1])));
-		return new ProgressSnapshot(completed, total, tabList);
+		for (Map.Entry<Identifier, int[]> entry : perTab.entrySet()) {
+			int deposited = Math.min(ledger.deposited().getOrDefault(entry.getKey(), 0), entry.getValue()[1]);
+			completed += deposited;
+			tabList.add(new Tab(entry.getKey(), deposited, entry.getValue()[1]));
+		}
+		return new ProgressSnapshot(Math.min(completed, total), total, tabList);
 	}
 
 	public record Tab(Identifier id, int completed, int total) {

@@ -325,9 +325,6 @@ public class AdvancementJarBlockEntity extends BlockEntity {
 			"advancement_jar.report.header",
 			ownerName == null ? owner.toString() : ownerName, snapshot.completed(), snapshot.total(), snapshot.percent()
 		);
-		for (ProgressSnapshot.Tab tab : snapshot.tabs()) {
-			report.append("\n").append(Component.translatable("advancement_jar.report.line", tabTitle(tab.id()), tab.completed(), tab.total()));
-		}
 		return report;
 	}
 

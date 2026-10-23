@@ -86,6 +86,11 @@ public final class MarbleData {
 		return deposited;
 	}
 
+	/** Records marbles dropped into a jar. The ledger is per player, so every jar they own shows the same total. */
+	public void deposit(Identifier tab, int count) {
+		deposited.merge(tab, count, Integer::sum);
+	}
+
 	public int depositedTotal() {
 		int sum = 0;
 		for (int count : deposited.values()) {

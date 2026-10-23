@@ -101,6 +101,10 @@ public class AdvancementJarBlock extends Block implements EntityBlock {
 
 	@Override
 	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		if (stack.getItem() instanceof MarbleItem) {
+			// Falls through to MarbleItem.useOn, which does the depositing.
+			return InteractionResult.PASS;
+		}
 		if (stack.getItem() instanceof JarItem) {
 			// Clicking a side of a jar stack with a jar adds the next layer; anything else falls through to normal placement.
 			return hitResult.getDirection() != Direction.UP && JarLayerBuilder.buildOnTop(level, pos, player, hand, stack)

@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.completionist.jar.AdvancementJarBlockEntity;
 import dev.completionist.jar.CompletionistJar;
 import dev.completionist.jar.JarSize;
+import dev.completionist.jar.MarbleColors;
+import dev.completionist.jar.ProgressSnapshot;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.AtlasIds;
@@ -49,7 +51,7 @@ public class JarRenderer implements BlockEntityRenderer<AdvancementJarBlockEntit
 		boolean completed;
 		MarbleLayout layout = MarbleLayout.EMPTY;
 		int filled;
-		Vec3 offset = Vec3.ZERO;
+		int[] colors = new int[0];
 	}
 
 	@Override
@@ -69,8 +71,44 @@ public class JarRenderer implements BlockEntityRenderer<AdvancementJarBlockEntit
 		JarSize size = be.isMaster() && be.getStructureSize() != null ? be.getStructureSize() : JarSize.SMALL;
 		state.layout = MarbleLayouts.get(size);
 		var progress = be.getProgress();
-		state.filled = progress.filledMarbles(state.layout.count());
+		state.filled = Mth.clamp(progress.filledMarbles(state.layout.count()), 0, state.layout.count());
 		state.completed = progress.isComplete();
+		state.colors = marbleColors(progress, state.filled);
+	}
+
+	/**
+	 * One colour per visible marble. The marbles are split between tabs in proportion to what was deposited from each,
+	 * so a jar fills in coloured bands (bottom marbles first). -1 means "no deposits, use the layout's own colour".
+	 */
+	static int[] marbleColors(ProgressSnapshot progress, int filled) {
+		int[] colors = new int[filled];
+		long deposited = 0;
+		for (ProgressSnapshot.Tab tab : progress.tabs()) {
+			deposited += tab.completed();
+		}
+		for (int i = 0; i < filled; i++) {
+			if (deposited <= 0) {
+				colors[i] = -1;
+				continue;
+			}
+			double target = (i + 0.5) / filled * deposited;
+			double running = 0;
+			int rgb = -1;
+			for (ProgressSnapshot.Tab tab : progress.tabs()) {
+				running += tab.completed();
+				if (target <= running) {
+					rgb = MarbleColors.forTab(tab.id());
+					break;
+				}
+			}
+			// A little per-marble brightness variation so a band does not look flat.
+			float shade = 0.85F + 0.15F * ((i * 37) % 16) / 15.0F;
+			int r = Math.round((rgb >> 16 & 0xFF) * shade);
+			int g = Math.round((rgb >> 8 & 0xFF) * shade);
+			int b = Math.round((rgb & 0xFF) * shade);
+			colors[i] = rgb < 0 ? -1 : (r << 16 | g << 8 | b);
+		}
+		return colors;
 	}
 
 	// Large structures are drawn only by their master, which may be far from the corner the player is looking at.
@@ -91,11 +129,11 @@ public class JarRenderer implements BlockEntityRenderer<AdvancementJarBlockEntit
 		}
 		poseStack.pushPose();
 		poseStack.scale(0.0625F, 0.0625F, 0.0625F);
-		drawJar(poseStack, collector, camera.orientation, state.layout, state.filled, state.lightCoords, state.completed);
+		drawJar(poseStack, collector, camera.orientation, state.layout, state.filled, state.colors, state.lightCoords, state.completed);
 		poseStack.popPose();
 	}
 
-	static void drawJar(PoseStack poseStack, SubmitNodeCollector collector, Quaternionf cameraOrientation, MarbleLayout layout, int filled, int light, boolean completed) {
+	static void drawJar(PoseStack poseStack, SubmitNodeCollector collector, Quaternionf cameraOrientation, MarbleLayout layout, int filled, int[] colors, int light, boolean completed) {
 		Vector3f right = cameraOrientation.transform(new Vector3f(1.0F, 0.0F, 0.0F));
 		Vector3f up = cameraOrientation.transform(new Vector3f(0.0F, 1.0F, 0.0F));
 		int count = Mth.clamp(filled, 0, layout.count());
@@ -103,7 +141,8 @@ public class JarRenderer implements BlockEntityRenderer<AdvancementJarBlockEntit
 			TextureAtlasSprite marble = sprite(MARBLE);
 			List<MarbleLayout.Marble> marbles = layout.marbles();
 			for (int i = 0; i < count && i < marbles.size(); i++) {
-				marble(vc, pose, marbles.get(i), right, up, marble, light);
+				int color = i < colors.length ? colors[i] : -1;
+				marble(vc, pose, marbles.get(i), color, right, up, marble, light);
 			}
 			solidShell(vc, pose, layout, light, completed);
 		});
@@ -172,7 +211,7 @@ public class JarRenderer implements BlockEntityRenderer<AdvancementJarBlockEntit
 		return Identifier.fromNamespaceAndPath(CompletionistJar.MODID, path);
 	}
 
-	private static void marble(VertexConsumer vc, PoseStack.Pose pose, MarbleLayout.Marble m, Vector3f right, Vector3f up, TextureAtlasSprite sprite, int light) {
+	private static void marble(VertexConsumer vc, PoseStack.Pose pose, MarbleLayout.Marble m, int rgb, Vector3f right, Vector3f up, TextureAtlasSprite sprite, int light) {
 		float h = m.size() / 2.0F;
 		float rx = right.x() * h;
 		float ry = right.y() * h;
@@ -180,9 +219,10 @@ public class JarRenderer implements BlockEntityRenderer<AdvancementJarBlockEntit
 		float ux = up.x() * h;
 		float uy = up.y() * h;
 		float uz = up.z() * h;
-		int r = m.argb() >> 16 & 0xFF;
-		int g = m.argb() >> 8 & 0xFF;
-		int b = m.argb() & 0xFF;
+		int argb = rgb >= 0 ? rgb : m.argb();
+		int r = argb >> 16 & 0xFF;
+		int g = argb >> 8 & 0xFF;
+		int b = argb & 0xFF;
 		quad(vc, pose, sprite, light, r, g, b, 0, 1, 0,
 			m.x() + rx - ux, m.y() + ry - uy, m.z() + rz - uz, 1, 1,
 			m.x() + rx + ux, m.y() + ry + uy, m.z() + rz + uz, 1, 0,

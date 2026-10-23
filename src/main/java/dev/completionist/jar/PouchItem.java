@@ -6,7 +6,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
@@ -21,7 +20,7 @@ public class PouchItem extends Item {
 		if (player instanceof ServerPlayer serverPlayer) {
 			PouchContainer container = new PouchContainer(MarbleData.get(serverPlayer));
 			serverPlayer.openMenu(new SimpleMenuProvider(
-				(id, inventory, p) -> ChestMenu.threeRows(id, inventory, container),
+				(id, inventory, p) -> new PouchMenu(id, inventory, container),
 				Component.translatable("container.completionist_jar.pouch")
 			));
 		}

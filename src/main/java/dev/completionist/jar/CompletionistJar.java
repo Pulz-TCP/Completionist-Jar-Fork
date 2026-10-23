@@ -65,6 +65,11 @@ public class CompletionistJar implements ModInitializer {
 		if (!force && now.equals(before)) {
 			return;
 		}
+		refreshJars(player);
+	}
+
+	/** Re-reads the owner's marble ledger into every jar they own and into jar items they are carrying. */
+	static void refreshJars(ServerPlayer player) {
 		AdvancementJarTracker.refreshRoots(player.getUUID()).forEach(AdvancementJarBlockEntity::refreshIfOwnerOnline);
 		JarItemRefresh.invalidate(player.getUUID());
 		JarItemRefresh.refreshCarried(player);
