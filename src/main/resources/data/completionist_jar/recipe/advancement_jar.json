@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [" I ", "G G", "GGG"],
+  "key": { "I": "minecraft:iron_ingot", "G": "minecraft:glass" },
+  "result": { "id": "completionist_jar:advancement_jar" }
+}

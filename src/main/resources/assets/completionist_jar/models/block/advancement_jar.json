@@ -1,0 +1,15 @@
+{
+  "textures": {
+    "particle": "completionist_jar:block/jar_particle",
+    "glass": "completionist_jar:block/jar_glass",
+    "lid_side": "completionist_jar:block/jar_lid_side",
+    "lid_top": "completionist_jar:block/jar_lid_top",
+    "rim": "completionist_jar:block/jar_rim_band"
+  },
+  "render_type": "translucent",
+  "elements": [
+    { "from": [2, 0, 2], "to": [14, 13, 14], "faces": {"up":{"texture":"#glass"},"down":{"texture":"#glass"},"north":{"texture":"#glass"},"south":{"texture":"#glass"},"west":{"texture":"#glass"},"east":{"texture":"#glass"}} },
+    { "from": [1.5, 12.75, 1.5], "to": [14.5, 14, 14.5], "faces": {"up":{"texture":"#rim"},"down":{"texture":"#rim"},"north":{"texture":"#rim"},"south":{"texture":"#rim"},"west":{"texture":"#rim"},"east":{"texture":"#rim"}} },
+    { "from": [2.5, 14, 2.5], "to": [13.5, 16, 13.5], "faces": { "up": {"texture":"#lid_top"}, "down": {"texture":"#lid_side"}, "north": {"texture":"#lid_side"}, "south": {"texture":"#lid_side"}, "west": {"texture":"#lid_side"}, "east": {"texture":"#lid_side"} } }
+  ]
+}

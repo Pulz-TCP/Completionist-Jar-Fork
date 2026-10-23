@@ -1,0 +1,21 @@
+{
+  "block.completionist_jar.advancement_jar": "Advancement Jar",
+  "advancement_jar.report.no_owner": "This Advancement Jar has no owner yet.",
+  "advancement_jar.report.header": "Advancement Jar (%s): %s / %s (%s%%)",
+  "advancement_jar.report.line": "%s: %s / %s",
+  "advancement_jar.tooltip.unowned": "Unowned",
+  "advancement_jar.tooltip.owner": "Owner: %s",
+  "advancement_jar.tooltip.progress": "%s / %s (%s%%)",
+  "advancement_jar.tooltip.more": "Hold Shift for sizes and building",
+  "advancement_jar.tooltip.sizes": "Sizes:",
+  "advancement_jar.tooltip.size.small": " Small (%s×%s×%s): %s jar, %s marbles",
+  "advancement_jar.tooltip.size.medium": " Medium (%s×%s×%s): %s jars, %s marbles",
+  "advancement_jar.tooltip.size.large": " Large (%s×%s×%s): %s jars, %s marbles",
+  "advancement_jar.tooltip.building": "Building:",
+  "advancement_jar.tooltip.building.layer": " Lay a 3×3 or 6×6 base, then place a jar on top to add a whole layer",
+  "advancement_jar.tooltip.building.side": " On a stack 2+ layers tall, right-click its side with a jar to add the next layer",
+  "advancement_jar.tooltip.building.sneak": " Sneak to place a single jar",
+  "advancement_jar.tooltip.building.report": " Right-click a placed jar (without a jar in hand) for a progress report",
+  "advancement_jar.building.blocked": "Can't build the layer: %s is in the way at %s, %s, %s",
+  "advancement_jar.building.obstructed": "Can't build the layer: something is in the way at %s, %s, %s"
+}

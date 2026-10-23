@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "completionist_jar:advancement_jar",
+          "functions": [
+            { "function": "minecraft:copy_components", "source": "block_entity", "include": ["completionist_jar:jar_contents"] }
+          ]
+        }
+      ]
+    }
+  ]
+}

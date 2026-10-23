@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": ["completionist_jar:advancement_jar"],
+  "result": { "id": "completionist_jar:advancement_jar" }
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "part=false": { "model": "completionist_jar:block/jar_particle" },
+    "part=true": { "model": "completionist_jar:block/jar_particle" }
+  }
+}

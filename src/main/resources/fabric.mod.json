@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "completionist_jar",
+	"version": "${version}",
+	"name": "Completionist Jar",
+	"description": "Fill a marble jar with your Minecraft advancements. Fabric port of Completionist Jar by Laszlo Takacs.",
+	"authors": ["Laszlo Takacs (original)"],
+	"license": "MIT",
+	"environment": "*",
+	"accessWidener": "completionist_jar.accesswidener",
+	"entrypoints": {
+		"main": ["dev.completionist.jar.CompletionistJar"],
+		"client": ["dev.completionist.jar.client.CompletionistJarClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.1",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
