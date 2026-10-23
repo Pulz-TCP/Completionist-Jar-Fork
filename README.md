@@ -1,6 +1,6 @@
 # Completionist Jar (Fabric fork)
 
-A Fabric port of **Completionist Jar** for **Minecraft 26.1.2**. Place a jar to claim it, build 3x3x4 and 6x6x8 shells of jars to grow it, and watch the marbles fill as you complete advancements.
+A Fabric port of **Completionist Jar** for **Minecraft 26.1.2**. Place a jar to claim it, build 3x3x4 and 6x6x8 shells of jars to grow it, then earn marbles by completing advancements and drop them into your jar.
 
 This fork contains the Advancement Jar only. The original mod's FTB Quests "Quest Jar" and Jade tooltip are not ported.
 
@@ -12,7 +12,10 @@ Based on [Completionist Jar](https://www.curseforge.com/minecraft/mc-mods/comple
 
 - Fabric instead of NeoForge, Minecraft 26.1.2 instead of 1.21.1.
 - Fabric has no "advancement earned" event, so each online player's progress is polled once a second.
-- Held and dropped jars currently show an empty jar model (no marble fill yet).
+- **Marbles** (this branch): completing an advancement gives you a marble, coloured by its advancement tab. Marbles go into a personal **Marble Pouch** (you get one on first join; craft another with 5 leather and 1 string). Right-click a jar you own with marbles to drop them in, and the jar fills with what you have deposited. Progress belongs to the player, so a broken jar loses nothing.
+- Held and dropped jars show their marble fill.
+
+How the marble system is built is explained in [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
 
 ## Building
 

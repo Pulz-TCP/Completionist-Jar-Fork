@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.special.SpecialModelRenderers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -28,6 +29,8 @@ public class CompletionistJarClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		BlockEntityRenderers.register(ModBlocks.ADVANCEMENT_JAR_BE, JarRenderer::new);
+		// Lets items/advancement_jar.json say {"type": "completionist_jar:jar"} to draw the jar with its fill.
+		SpecialModelRenderers.ID_MAPPER.put(Identifier.fromNamespaceAndPath(CompletionistJar.MODID, "jar"), JarItemRenderer.Unbaked.MAP_CODEC);
 		ResourceLoader.get(PackType.CLIENT_RESOURCES)
 			.registerReloadListener(Identifier.fromNamespaceAndPath(CompletionistJar.MODID, "marble_layouts"), new MarbleLayouts());
 		ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> onTooltip(stack, lines));
